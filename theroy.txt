@@ -1,0 +1,108 @@
+TMDB foe movies data for that we have copy APIKEY for the Program.
+we will create a file called requests.js in that we have the URLKet for the program
+--> request.js
+const API_KEY = "5ce6e70741a979509874c45fe210bd54" ; //TMDB key
+
+//Request thet we have created for some features for the applications such as tranding,Toprating,Action movies ect like that.
+const requests = {
+    fetchTrending: `/trending/all/week?api_key=${API_KEY}&language=en-US`,
+    fetchNetflixOriginals:`/discover/tv?api_key=${API_KEY}&with_networks=213`,
+    fetchTopRated: `/movie/top_rated?api_key=${API_KEY}&language=en-US` ,
+    fetchActionMovies: `/discover/movie?api_key=${API_KEY}&with_genres=28`,
+    fetchComedyMovies: `/discover/movie?api_key=${API_KEY}&with_genres=35`,
+    fetchHorrorMovies: `/discover/movie?api_key=${API_KEY}&with_genres=27`,
+    fetchRomanceMovies: `/discover/movie?api_key=${API_KEY}&with_genres=10749`,
+    fetchDocumentaries: `/discover/movie?api_key=${API_KEY}&with_genres=99`,
+}
+export default requests;
+
+Now we have to fetch that data in main folder
+function App() {
+  return (
+    <div className="app">
+    
+    <h1>Netflic Clone</h1>
+    <Row title="NETFLIX ORIGINAL" fetchUrl={requests.fetchNetflixOriginals}/>
+    //fetchUrl is a method whwere we are calling the requests.fetchNetflixOriginals method the we have created in requests.js method.
+    </div>
+  );
+}
+
+-->axios.js
+axios is a technology that help to run dackend data it an alternative of Express.js
+import axios from "axios"
+const instance = axios.create({
+      baseURL: "https://api.themoviedb.org/3"
+      //its an TMDB movies file that we got form the TMDB site its an BaseUrl of our Application.
+});
+export default instance;
+
+--> Row.js in Components
+In this step we are calling api for images 
+import React, { useEffect, useState } from 'react'
+import './Row.css'
+import axios from '../axios'
+
+const baseUrl = "https://image.tmdb.org/t/p/original/";
+function Row({title, fetchUrl}) {
+    const [movies, setmovies] = useState([]);
+
+    useEffect(()=>{
+     async function fetchData(){
+        const request = await axios.get(fetchUrl);
+        setmovies(request.data.results);
+        return request;
+        // we will get the URl that we have taken form request.js file which is impoeted in app.js then in Row.js. the Url is form TMDB.
+     }fetchData();
+    },[fetchUrl]);
+    return (
+        <div className='row'>
+           <h2>
+            {title}
+           </h2>
+           <div className='row_poster'>
+              {movies.map(movie => (
+                    <img
+                    className='row_poster'
+                    src={`${baseUrl}${movie.poster_path}`}
+                    alt={`${movie.name}`}
+                    />
+               ) ) }
+            </div>
+        </div>
+    )
+}
+
+export default Row
+--> Row.css
+.row{
+    margin-left: 20px;
+    color: white;
+}
+.row__poster{
+    width: 100%;
+    object-fit: contain;
+    max-height: 150px;
+    transition: transform 450ms ;
+    margin-right: 10px;
+}
+.row__posters{
+    display: flex;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    padding: 20px;
+}
+.row__posters::-webkit-scrollbar{
+    display: none;
+}
+.row__poster:hover{
+ transform: scale(1.08);
+}
+.row__posterLarge{
+    max-height: 250px;
+}
+.row__posterLarge:hover{
+    transform: scale(1.09); 
+}
+
+-->create Banner.js in components folder
